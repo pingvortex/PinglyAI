@@ -40,7 +40,7 @@
             if (sender === 'bot' || sender === 'error') {
                 const thinkMatch = text.match(/<think>(.*?)<\/think>(.*)/s);
                 if (thinkMatch) {
-                    const thinkContent = DOMPurify.sanitize(thinkMatch[1]);
+                    const thinkContent = DOMPurify.sanitize(thinkMatch[1], { ALLOWED_TAGS: [] });
                     const answerContent = DOMPurify.sanitize(marked.parse(thinkMatch[2]));
                     messageDiv.innerHTML = `
                         <details class="think-container">
@@ -54,8 +54,23 @@
                 }
                 
                 setTimeout(() => {
-                    document.querySelectorAll('pre code').forEach(hljs.highlightElement);
-                }, 0);
+    document.querySelectorAll('pre code').forEach(hljs.highlightElement);
+    document.querySelectorAll('pre').forEach(pre => {
+        if (pre.querySelector('.copy-button')) return;
+        
+        const button = document.createElement('button');
+        button.className = 'copy-button';
+        button.innerHTML = '<i class="fas fa-copy"></i>';
+        button.addEventListener('click', () => {
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(() => button.innerHTML = '<i class="fas fa-copy"></i>', 2000);
+            });
+        });
+        pre.appendChild(button);
+    });
+}, 0);
             } else {
                 messageDiv.textContent = text;
             }
