@@ -40,7 +40,7 @@
             if (sender === 'bot' || sender === 'error') {
                 const thinkMatch = text.match(/<think>(.*?)<\/think>(.*)/s);
                 if (thinkMatch) {
-                    const thinkContent = DOMPurify.sanitize(marked.parse(thinkMatch[1]));
+                    const thinkContent = DOMPurify.sanitize(thinkMatch[1]);
                     const answerContent = DOMPurify.sanitize(marked.parse(thinkMatch[2]));
                     messageDiv.innerHTML = `
                         <details class="think-container">
@@ -61,10 +61,7 @@
             }
             
             chatBox.appendChild(messageDiv);
-            
-            if (sender === 'bot' || sender === 'error') {
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
 
         document.getElementById('chat-form').addEventListener('submit', async (e) => {
@@ -95,7 +92,7 @@
                 
                 const data = await response.json();
                 if (!data?.response) {
-                    throw new Error('Empty response form server');
+                    throw new Error('Empty response from server');
                 }
                 addMessage(data.response, 'bot');
             } catch (error) {
