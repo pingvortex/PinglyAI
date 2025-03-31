@@ -224,7 +224,7 @@ font-family: monospace !important;
 
 .message-actions {
     position: absolute;
-    bottom: 1rem;
+    top: 1rem;
     right: 1rem;
     display: flex;
     gap: 0.5rem;
