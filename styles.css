@@ -200,7 +200,7 @@ font-family: monospace !important;
 }
 
 .copy-button, .retry-button {
-    background: none;
+    background: #151515;
     border: 1px solid #2d2d2d;
     border-radius: 4px;
     color: #666;
@@ -213,9 +213,9 @@ font-family: monospace !important;
 }
 
 .copy-button:hover, .retry-button:hover {
-    color: #fff;
+    background: rgba(255,255,255,0.1);
     border-color: #3d3d3d;
-    background: rgba(255,255,255,0.05);
+    color: #fff;
 }
 
 .copy-button i, .retry-button i {
@@ -230,9 +230,18 @@ font-family: monospace !important;
     gap: 0.5rem;
 }
 
-a {
-    color: #666;
+pre .retry-button {
+    background: #1a1a1a;
+    border-color: #2d2d2d;
 }
-a:hover {
-    color: #fff;
+
+.bot-message a {
+    color: #58a6ff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.bot-message a:hover {
+    color: #79b8ff;
+    text-decoration: underline;
 }
