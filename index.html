@@ -22,13 +22,30 @@
         <form id="chat-form">
             <div class="input-container">
                 <textarea id="user-input" placeholder="Message PinglyAI..." style="resize: none;"></textarea>
-                <button type="submit" id="send-button" disabled>
+                <button type="submit" id="send-button">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
         </form>
     </main>
     <script>
+            const userInput = document.getElementById('user-input');
+            const sendButton = document.getElementById('send-button');
+            const isTouchDevice = 'ontouchstart' in window;
+
+            userInput.addEventListener('input', function() {
+                sendButton.disabled = this.value.trim() === '';
+    });
+
+    userInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            if (!isTouchDevice && !isWaiting && this.value.trim()) {
+                e.preventDefault();
+                document.getElementById('chat-form').requestSubmit();
+            }
+        }
+    });
+
         function addMessage(text, sender, retryCallback = null) {
             const chatBox = document.getElementById('chat-box');
             const messageDiv = document.createElement('div');
