@@ -32,7 +32,8 @@
         const userInput = document.getElementById('user-input');
         const sendButton = document.getElementById('send-button');
         const isTouchDevice = 'ontouchstart' in window;
-        let isWaiting = false; // Added declaration
+        let isWaiting = false;
+        const sessionId = Date.now().toString(36) + Math.random().toString(36).slice(2);
 
         userInput.addEventListener('input', function() {
             sendButton.disabled = this.value.trim() === '';
