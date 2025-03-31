@@ -225,11 +225,13 @@ font-family: monospace !important;
 }
 
 .message-actions {
-    position: static;
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
     display: flex;
     justify-content: flex-end;
     gap: 0.75rem;
-    margin-top: 1.5rem;
+    margin-top: 0 !important;
   }
 
 pre .retry-button {
