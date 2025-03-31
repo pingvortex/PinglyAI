@@ -29,22 +29,23 @@
         </form>
     </main>
     <script>
-            const userInput = document.getElementById('user-input');
-            const sendButton = document.getElementById('send-button');
-            const isTouchDevice = 'ontouchstart' in window;
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const isTouchDevice = 'ontouchstart' in window;
+        let isWaiting = false; // Added declaration
 
-            userInput.addEventListener('input', function() {
-                sendButton.disabled = this.value.trim() === '';
-    });
+        userInput.addEventListener('input', function() {
+            sendButton.disabled = this.value.trim() === '';
+        });
 
-    userInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            if (!isTouchDevice && !isWaiting && this.value.trim()) {
-                e.preventDefault();
-                document.getElementById('chat-form').requestSubmit();
+        userInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                if (!isTouchDevice && !isWaiting && this.value.trim()) {
+                    e.preventDefault();
+                    document.getElementById('chat-form').requestSubmit();
+                }
             }
-        }
-    });
+        });
 
         function addMessage(text, sender, retryCallback = null) {
             const chatBox = document.getElementById('chat-box');
