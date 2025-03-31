@@ -83,6 +83,7 @@ white-space: pre-wrap;
 .bot-message {
 background: #151515;
 border: 1px solid #2d2d2d;
+padding-bottom: 1.5rem;
 }
 
 .bot-message .answer-content {
@@ -224,12 +225,11 @@ font-family: monospace !important;
 }
 
 .message-actions {
-    position: relative;
-    top: auto;
-    right: auto;
+    position: static;
+    display: flex;
     justify-content: flex-end;
-    margin-top: 1rem;
     gap: 0.75rem;
+    margin-top: 1.5rem;
   }
 
 pre .retry-button {
@@ -249,22 +249,23 @@ pre .retry-button {
 }
 
 pre {
-    position: relative;
-    padding-top: 2rem !important;
+    position: relative !important;
+    padding-top: 2.5rem !important;
+    margin: 1rem 0 !important;
   }
   
   pre .copy-button {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    margin: 0;
-    background: #2d2d2d;
-    border: 1px solid #3d3d3d;
-    z-index: 1;
+    position: absolute !important;
+    top: 0.5rem !important;
+    right: 0.5rem !important;
+    margin: 0 !important;
+    background: #2d2d2d !important;
+    border: 1px solid #3d3d3d !important;
+    z-index: 1 !important;
   }
   
   pre .copy-button:hover {
-    background: #3d3d3d;
+    background: #3d3d3d !important;
   }
 
   .bot-message .message-actions {
