@@ -139,23 +139,23 @@
                 messageDiv.appendChild(buttonsContainer);
     
                 setTimeout(() => {
-                    document.querySelectorAll('pre code').forEach(hljs.highlightElement);
-                    document.querySelectorAll('pre').forEach(pre => {
-                        if (pre.querySelector('.copy-button')) return;
-    
-                        const button = document.createElement('button');
-                        button.className = 'copy-button';
-                        button.innerHTML = '<i class="fas fa-copy"></i>';
-                        button.addEventListener('click', () => {
-                            const code = pre.querySelector('code').innerText;
-                            navigator.clipboard.writeText(code).then(() => {
-                                button.innerHTML = '<i class="fas fa-check"></i>';
-                                setTimeout(() => button.innerHTML = '<i class="fas fa-copy"></i>', 2000);
-                            });
-                        });
-                        pre.appendChild(button);
-                    });
-                }, 0);
+  document.querySelectorAll('pre code').forEach(hljs.highlightElement);
+  document.querySelectorAll('pre').forEach(pre => {
+    if (pre.querySelector('.copy-button')) return;
+
+    const button = document.createElement('button');
+    button.className = 'copy-button';
+    button.innerHTML = '<i class="fas fa-copy"></i>';
+    button.addEventListener('click', () => {
+      const code = pre.querySelector('code').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        button.innerHTML = '<i class="fas fa-check"></i>';
+        setTimeout(() => button.innerHTML = '<i class="fas fa-copy"></i>', 2000);
+      });
+    });
+    pre.insertBefore(button, pre.firstChild);
+  });
+}, 0);
             } else {
                 messageDiv.textContent = text;
             }
