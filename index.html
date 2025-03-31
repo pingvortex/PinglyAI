@@ -48,7 +48,7 @@
             }
         });
 
-        function addMessage(text, sender, retryCallback = null) {
+        function addMessage(text, sender) {
             const chatBox = document.getElementById('chat-box');
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message', `${sender}-message`);
@@ -68,7 +68,10 @@
                 } else {
                     messageDiv.innerHTML = DOMPurify.sanitize(marked.parse(text));
                 }
-    
+
+                const buttonsContainer = document.createElement('div');
+                buttonsContainer.className = 'message-actions';
+
                 const copyButton = document.createElement('button');
                 copyButton.className = 'copy-button';
                 copyButton.innerHTML = '<i class="fas fa-copy"></i>';
@@ -79,20 +82,61 @@
                         setTimeout(() => copyButton.innerHTML = '<i class="fas fa-copy"></i>', 2000);
                     });
                 });
-                messageDiv.appendChild(copyButton);
-    
-                if (sender === 'error' && retryCallback) {
-                    const retryButton = document.createElement('button');
-                    retryButton.className = 'retry-button';
-                    retryButton.innerHTML = '<i class="fas fa-redo"></i>';
-                    retryButton.addEventListener('click', () => {
-                        if (!isWaiting) {
-                            retryButton.disabled = true;
-                            retryCallback();
+
+                const retryButton = document.createElement('button');
+                retryButton.className = 'retry-button';
+                retryButton.innerHTML = '<i class="fas fa-redo"></i>';
+                retryButton.addEventListener('click', async () => {
+                    if (isWaiting) return;
+                    
+                    const messageDiv = retryButton.closest('.message');
+                    const userMessageDiv = messageDiv.previousElementSibling;
+                    
+                    if (!userMessageDiv || !userMessageDiv.classList.contains('user-message')) {
+                        console.error('No user message found for retry');
+                        return;
+                    }
+
+                    isWaiting = true;
+                    sendButton.disabled = true;
+                    userInput.disabled = true;
+                    retryButton.disabled = true;
+
+                    try {
+                        messageDiv.remove();
+                        if (sender === 'error') {
+                            userMessageDiv.remove();
                         }
-                    });
-                    messageDiv.appendChild(retryButton);
-                }
+
+                        const response = await fetch('https://apipingvortex.vercel.app/api/chat', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                message: userMessageDiv.textContent,
+                                session_id: sessionId,
+                                is_retry: true
+                            })
+                        });
+
+                        if (!response.ok) throw new Error('API request failed');
+
+                        const data = await response.json();
+                        if (!data?.response) {
+                            throw new Error('Empty response from server');
+                        }
+                        addMessage(data.response, 'bot');
+                    } catch (error) {
+                        addMessage('Error: ' + error.message, 'error');
+                    } finally {
+                        isWaiting = false;
+                        sendButton.disabled = false;
+                        userInput.disabled = false;
+                        userInput.focus();
+                    }
+                });
+
+                buttonsContainer.append(copyButton, retryButton);
+                messageDiv.appendChild(buttonsContainer);
     
                 setTimeout(() => {
                     document.querySelectorAll('pre code').forEach(hljs.highlightElement);
@@ -137,35 +181,27 @@
             addMessage(message, 'user');
             input.value = '';
     
-            const retryCallback = async () => {
-                await sendMessageToAPI(message);
-            };
-    
-            await sendMessageToAPI(message, retryCallback);
-    
-            async function sendMessageToAPI(message, retryCallback) {
-                try {
-                    const response = await fetch('https://apipingvortex.vercel.app/api/chat', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message, session_id: sessionId })
-                    });
-    
-                    if (!response.ok) throw new Error('API request failed');
-    
-                    const data = await response.json();
-                    if (!data?.response) {
-                        throw new Error('Empty response from server');
-                    }
-                    addMessage(data.response, 'bot');
-                } catch (error) {
-                    addMessage('Error: ' + error.message, 'error', retryCallback);
-                } finally {
-                    isWaiting = false;
-                    sendButton.disabled = false;
-                    input.disabled = false;
-                    input.focus();
+            try {
+                const response = await fetch('https://apipingvortex.vercel.app/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, session_id: sessionId })
+                });
+
+                if (!response.ok) throw new Error('API request failed');
+
+                const data = await response.json();
+                if (!data?.response) {
+                    throw new Error('Empty response from server');
                 }
+                addMessage(data.response, 'bot');
+            } catch (error) {
+                addMessage('Error: ' + error.message, 'error');
+            } finally {
+                isWaiting = false;
+                sendButton.disabled = false;
+                input.disabled = false;
+                input.focus();
             }
         });
     </script>
