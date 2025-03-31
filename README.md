@@ -28,7 +28,8 @@ We welcome contributions! Please follow these steps:
 
 **Guidelines:**  
 - Report bugs via GitHub Issues  
-- Suggest features in our Discord  
+- Suggest features in our Discord
+- **If you want to add/change something that will require backend changes, contact me on Discord**.
 - Follow existing code style and patterns  
 - Ensure all submissions are compatible with Apache 2.0 license  
 
