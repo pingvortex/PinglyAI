@@ -76,16 +76,16 @@ border-radius: 4px;
 }
 
 .user-message {
-background: #2d2d2d;
-margin-left: auto;
-border: 1px solid #3d3d3d;
-white-space: pre-wrap;
+    background: #2d2d2d;
+    margin-left: auto;
+    border: 1px solid #3d3d3d;
+    white-space: pre-wrap;
 }
 
 .bot-message {
-background: #151515;
-border: 1px solid #2d2d2d;
-padding-bottom: 1.5rem;
+    background: #151515;
+    border: 1px solid #2d2d2d;
+    padding-bottom: 1.5rem;
 }
 
 .bot-message .answer-content {
