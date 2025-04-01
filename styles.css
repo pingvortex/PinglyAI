@@ -45,12 +45,12 @@ margin-bottom: 12px;
 }
 
 #chat-box {
-max-height: 60vh;
-overflow-y: auto;
-margin: 2rem 0;
-display: flex;
-flex-direction: column;
-gap: 1.5rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
 #chat-box::-webkit-scrollbar {
@@ -64,17 +64,15 @@ border-radius: 4px;
 }
 
 .message {
-padding: 1.5rem;
-border-radius: 1rem;
-max-width: 70%;
-position: absolute;
-bottom: 0.75rem;
-right: 0.75rem;
-display: flex;
-gap: 0.75rem;
-animation: fadeIn 0.3s ease-in;
-line-height: 1.6;
-padding-bottom: 2.5rem;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    max-width: 70%;
+    position: relative;
+    display: flex;
+    gap: 0.75rem;
+    animation: fadeIn 0.3s ease-in;
+    line-height: 1.6;
+    padding-bottom: 2.5rem;
 }
 
 .user-message {
