@@ -3,207 +3,355 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PinglyAI - Chat</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <title>PinglyChat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #343541;
+            color: #ececf1;
+            display: flex;
+            height: 100vh;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #202123;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #565869;
+            border-radius: 4px;
+        }
+
+        .sidebar {
+    width: 260px;
+    background-color: #202123;
+    border-right: 1px solid #343541;
+    padding: 16px;
+    overflow-y: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+        .new-chat-btn {
+            background: #10a37f;
+            color: white;
+            border: 1px solid #40414f;
+            padding: 12px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 4px;
+        }
+
+        .chat-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #2d2d2d;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .chat-item.active {
+            background: #343541;
+            border-color: #40414f;
+        }
+
+        .discord-link {
+            position: sticky;
+            background: #40414f;
+            padding: 12px;
+            border-radius: 4px;
+            color: #ececf1;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-history {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .message {
+            max-width: 100%;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .user-message {
+            background: #343541;
+            padding: 1.5rem;
+            border: 1px solid #40414f;
+            margin-left: auto;
+        }
+
+        .bot-message {
+            background: #444654;
+            padding: 1.5rem;
+            border: 1px solid #40414f;
+            position: relative;
+        }
+
+        .input-container {
+            padding: 2rem;
+            border-top: 1px solid #40414f;
+            background: #343541;
+        }
+
+        .input-box {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 1rem;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 1rem;
+            background: #40414f;
+            border: 1px solid #565869;
+            color: #ececf1;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 12px 24px;
+            background: #10a37f;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .regenerate-container {
+            text-align: center;
+            padding: 1rem;
+            border-top: 1px solid #40414f;
+        }
+
+        .copy-button {
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            background: #565869;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+
+        pre {
+            background: #202123 !important;
+            padding: 1rem !important;
+            border-radius: 4px;
+            margin: 1rem 0 !important;
+            position: relative;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #343541;
+            border-bottom: 1px solid #40414f;
+        }
+
+        .code-language {
+            font-size: 0.8em;
+            color: #8e8e9e;
+        }
+
+        #chat-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    max-height: calc(100vh - 200px);
+}
+    </style>
 </head>
 <body>
-    <main class="container">
-        <header class="header">
-            <h1>PinglyAI</h1>
-        </header>
-        <h1>Chat with PinglyAI</h1>
-        <div id="chat-box"></div>
-        <form id="chat-form">
-            <div class="input-container">
-                <textarea id="user-input" placeholder="Message PinglyAI..." style="resize: none;"></textarea>
-                <button type="submit" id="send-button">
-                    <i class="fas fa-paper-plane"></i>
-                </button>
+    <div class="sidebar">
+        <button onclick="createNewChat()" class="new-chat-btn">
+            <i class="fa-solid fa-plus"></i>New Chat
+        </button>
+        <div id="chat-list"></div>
+        <a href="https://discord.gg/At3CcCqcR2" target="_blank" class="discord-link">
+            <i class="fa-brands fa-discord"></i>
+            <span>Join Discord</span>
+        </a>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-history" id="chat-history"></div>
+        <div class="regenerate-container">
+            <button onclick="retryLastMessage()"><i class="fas fa-redo"></i> Regenerate Response</button>
+        </div>
+        <div class="input-container">
+            <div class="input-box">
+                <input type="text" id="message-input" placeholder="Send a message">
+                <button onclick="sendMessage()">Send</button>
             </div>
-        </form>
-    </main>
+        </div>
+    </div>
+
     <script>
-        const userInput = document.getElementById('user-input');
-        const sendButton = document.getElementById('send-button');
-        const isTouchDevice = 'ontouchstart' in window;
-        let isWaiting = false;
-        const sessionId = Date.now().toString(36) + Math.random().toString(36).slice(2);
+        let chats = []
+        let activeChatId = null
+        let isWaiting = false
+        const sessionId = Date.now().toString(36) + Math.random().toString(36).slice(2)
+        const messageInput = document.getElementById('message-input')
 
-        userInput.addEventListener('input', function() {
-            sendButton.disabled = this.value.trim() === '';
-        });
-
-        userInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                if (!isTouchDevice && !isWaiting && this.value.trim()) {
-                    e.preventDefault();
-                    document.getElementById('chat-form').requestSubmit();
-                }
+        function createNewChat() {
+            const chatId = Date.now()
+            const newChat = {
+                id: chatId,
+                title: `Chat ${chats.length + 1}`,
+                messages: [],
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             }
-        });
-
-        function addMessage(text, sender) {
-            const chatBox = document.getElementById('chat-box');
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', `${sender}-message`);
-    
-            if (sender === 'bot' || sender === 'error') {
-                const thinkMatch = text.match(/<think>(.*?)<\/think>(.*)/s);
-                if (thinkMatch) {
-                    const thinkContent = DOMPurify.sanitize(thinkMatch[1], { ALLOWED_TAGS: [] });
-                    const answerContent = DOMPurify.sanitize(marked.parse(thinkMatch[2]));
-                    messageDiv.innerHTML = `
-                        <details class="think-container">
-                            <summary>Thinking Process</summary>
-                            <div class="think-content">${thinkContent}</div>
-                        </details>
-                        <div class="answer-content">${answerContent}</div>
-                    `;
-                } else {
-                    messageDiv.innerHTML = DOMPurify.sanitize(marked.parse(text));
-                }
-
-                const buttonsContainer = document.createElement('div');
-                buttonsContainer.className = 'message-actions';
-
-                const copyButton = document.createElement('button');
-                copyButton.className = 'copy-button';
-                copyButton.innerHTML = '<i class="fas fa-copy"></i>';
-                copyButton.addEventListener('click', () => {
-                    const contentToCopy = messageDiv.innerText;
-                    navigator.clipboard.writeText(contentToCopy).then(() => {
-                        copyButton.innerHTML = '<i class="fas fa-check"></i>';
-                        setTimeout(() => copyButton.innerHTML = '<i class="fas fa-copy"></i>', 2000);
-                    });
-                });
-
-                const retryButton = document.createElement('button');
-                retryButton.className = 'retry-button';
-                retryButton.innerHTML = '<i class="fas fa-redo"></i>';
-                retryButton.addEventListener('click', async () => {
-                    if (isWaiting) return;
-                    
-                    const messageDiv = retryButton.closest('.message');
-                    const userMessageDiv = messageDiv.previousElementSibling;
-                    
-                    if (!userMessageDiv || !userMessageDiv.classList.contains('user-message')) {
-                        console.error('No user message found for retry');
-                        return;
-                    }
-
-                    isWaiting = true;
-                    sendButton.disabled = true;
-                    userInput.disabled = true;
-                    retryButton.disabled = true;
-
-                    try {
-                        messageDiv.remove();
-                        if (sender === 'error') {
-                            userMessageDiv.remove();
-                        }
-
-                        const response = await fetch('https://apipingvortex.vercel.app/api/chat', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                message: userMessageDiv.textContent,
-                                session_id: sessionId,
-                                is_retry: true
-                            })
-                        });
-
-                        if (!response.ok) throw new Error('API request failed');
-
-                        const data = await response.json();
-                        if (!data?.response) {
-                            throw new Error('Empty response from server');
-                        }
-                        addMessage(data.response, 'bot');
-                    } catch (error) {
-                        addMessage('Error: ' + error.message, 'error');
-                    } finally {
-                        isWaiting = false;
-                        sendButton.disabled = false;
-                        userInput.disabled = false;
-                        userInput.focus();
-                    }
-                });
-
-                buttonsContainer.append(copyButton, retryButton);
-                messageDiv.appendChild(buttonsContainer);
-    
-                setTimeout(() => {
-  document.querySelectorAll('pre code').forEach(hljs.highlightElement);
-  document.querySelectorAll('pre').forEach(pre => {
-    if (pre.querySelector('.copy-button')) return;
-
-    const button = document.createElement('button');
-    button.className = 'copy-button';
-    button.innerHTML = '<i class="fas fa-copy"></i>';
-    button.addEventListener('click', () => {
-      const code = pre.querySelector('code').innerText;
-      navigator.clipboard.writeText(code).then(() => {
-        button.innerHTML = '<i class="fas fa-check"></i>';
-        setTimeout(() => button.innerHTML = '<i class="fas fa-copy"></i>', 2000);
-      });
-    });
-    pre.insertBefore(button, pre.firstChild);
-  });
-}, 0);
-            } else {
-                messageDiv.textContent = text;
-            }
-    
-            chatBox.appendChild(messageDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
+            chats.unshift(newChat)
+            activeChatId = chatId
+            renderChatList()
+            renderActiveChat()
+            messageInput.focus()
         }
-    
-        document.getElementById('chat-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (isWaiting) return;
-    
-            const input = document.getElementById('user-input');
-            const sendButton = document.getElementById('send-button');
-            const message = input.value.trim();
-    
-            if (!message) return;
-    
-            isWaiting = true;
-            sendButton.disabled = true;
-            input.disabled = true;
-    
-            addMessage(message, 'user');
-            input.value = '';
-    
+
+        function renderChatList() {
+            const chatList = document.getElementById('chat-list')
+            chatList.innerHTML = chats.map(chat => `
+                <div class="chat-item ${chat.id === activeChatId ? 'active' : ''}" onclick="switchChat(${chat.id})">
+                    <div>${chat.title}</div>
+                    <div style="font-size:0.8em;color:#8e8e9e">${chat.timestamp}</div>
+                </div>
+            `).join('')
+        }
+
+        function switchChat(chatId) {
+            activeChatId = chatId
+            renderChatList()
+            renderActiveChat()
+            messageInput.focus()
+        }
+
+        function renderActiveChat() {
+            const chat = chats.find(c => c.id === activeChatId)
+            const chatHistory = document.getElementById('chat-history')
+            chatHistory.innerHTML = chat.messages.map(msg => `
+                <div class="message">
+                    <div class="${msg.role}-message">
+                        ${msg.content}
+                        ${msg.role === 'bot' ? `<button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i></button>` : ''}
+                    </div>
+                </div>
+            `).join('')
+            chatHistory.scrollTop = chatHistory.scrollHeight
+            document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block))
+        }
+
+        async function sendMessage() {
+            if (isWaiting || !messageInput.value.trim()) return
+            
+            const message = messageInput.value.trim()
+            messageInput.value = ''
+            const chat = chats.find(c => c.id === activeChatId)
+            chat.messages.push({ role: 'user', content: message })
+            renderActiveChat()
+
+            isWaiting = true
             try {
                 const response = await fetch('https://apipingvortex.vercel.app/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message, session_id: sessionId })
-                });
+                })
 
-                if (!response.ok) throw new Error('API request failed');
-
-                const data = await response.json();
-                if (!data?.response) {
-                    throw new Error('Empty response from server');
-                }
-                addMessage(data.response, 'bot');
+                if (!response.ok) throw new Error('API request failed')
+                const data = await response.json()
+                const parsed = DOMPurify.sanitize(marked.parse(data.response))
+                
+                chat.messages.push({ 
+                    role: 'bot', 
+                    content: parsed.replace(/<pre><code class="language-(.*?)">/g, (match, p1) => `
+                        <div class="code-header">
+                            <span class="code-language">${p1}</span>
+                            <button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <pre><code class="language-${p1}">
+                    `)
+                })
+                
+                chat.timestamp = new Date().toLocaleTimeString()
+                renderChatList()
+                renderActiveChat()
             } catch (error) {
-                addMessage('Error: ' + error.message, 'error');
+                chat.messages.push({ role: 'bot', content: `Error: ${error.message}` })
+                renderActiveChat()
             } finally {
-                isWaiting = false;
-                sendButton.disabled = false;
-                input.disabled = false;
-                input.focus();
+                isWaiting = false
             }
-        });
+        }
+
+        function retryLastMessage() {
+            const chat = chats.find(c => c.id === activeChatId)
+            const lastUserMessage = chat.messages.filter(m => m.role === 'user').pop()
+            if (lastUserMessage) {
+                chat.messages = chat.messages.slice(0, -1)
+                messageInput.value = lastUserMessage.content
+                sendMessage()
+            }
+        }
+
+        function copyToClipboard(button) {
+            const content = button.closest('.bot-message').innerText.replace('Copy', '')
+            navigator.clipboard.writeText(content)
+            button.innerHTML = '<i class="fas fa-check"></i>'
+            setTimeout(() => button.innerHTML = '<i class="fas fa-copy"></i>', 2000)
+        }
+
+        messageInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault()
+                sendMessage()
+            }
+        })
+
+        createNewChat()
     </script>
 </body>
 </html>
