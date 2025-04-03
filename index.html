@@ -9,7 +9,7 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <title>PinglyChat</title>
+    <title>PinglyAI</title>
     <style>
         * {
             margin: 0;
@@ -145,6 +145,7 @@
             padding: 1.5rem;
             border: 1px solid #40414f;
             margin-left: auto;
+            white-space: pre-wrap;
         }
 
         .bot-message {
@@ -152,6 +153,10 @@
             padding: 1.5rem;
             border: 1px solid #40414f;
             position: relative;
+        }
+
+        .bot-message p {
+            margin-bottom: 1rem;
         }
 
         .input-container {
@@ -175,6 +180,10 @@
             color: #ececf1;
             border-radius: 4px;
             font-size: 1rem;
+            resize: none;
+            min-height: 60px;
+            max-height: 200px;
+            overflow-y: auto;
         }
 
         button {
@@ -394,7 +403,7 @@
         </div>
         <div class="input-container">
             <div class="input-box">
-                <input type="text" id="message-input" placeholder="Send a message">
+                <textarea id="message-input" placeholder="Send a message" autocomplete="off"></textarea>
                 <button onclick="sendMessage()" id="send-btn">Send</button>
             </div>
         </div>
@@ -422,7 +431,9 @@
         const deleteModal = document.getElementById('delete-modal');
 
         marked.setOptions({
-            sanitize: true
+            sanitize: true,
+            breaks: true,
+            gfm: true
         });
 
         DOMPurify.setConfig({
@@ -521,7 +532,7 @@
                         <div class="${msg.role}-message">
                             ${msg.role === 'bot' 
                                 ? processThinkContent(msg.content) 
-                                : DOMPurify.sanitize(escapeHTML(msg.content))}
+                                : formatUserMessage(msg.content)}
                             ${msg.role === 'bot' ? `<button class="copy-button" onclick="copyToClipboard(this)"><i class="fas fa-copy"></i></button>` : ''}
                         </div>
                     </div>
@@ -533,11 +544,16 @@
             document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
         }
 
+        function formatUserMessage(content) {
+            return escapeHTML(content).replace(/\n/g, '<br>');
+        }
+
         async function sendMessage() {
             if (isWaiting || !messageInput.value.trim()) return;
             
             const message = messageInput.value.trim();
             messageInput.value = '';
+            messageInput.style.height = 'auto';
             const chat = chats.find(c => c.id === activeChatId);
             
             chat.messages.push({ 
@@ -670,11 +686,16 @@
             }
         }
 
-        messageInput.addEventListener('keypress', e => {
+        messageInput.addEventListener('keydown', e => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendMessage();
             }
+        });
+
+        messageInput.addEventListener('input', () => {
+            messageInput.style.height = 'auto';
+            messageInput.style.height = (messageInput.scrollHeight) + 'px';
         });
 
         deleteModal.addEventListener('click', (e) => {
